@@ -9,11 +9,30 @@ import Testing
 @testable import deepdrop
 
 struct deepdropTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+    @Test func connectionColorTagsHaveStableDisplayNames() {
+        #expect(ConnectionColorTag.blue.displayName == "Blue")
+        #expect(ConnectionColorTag.green.displayName == "Green")
+        #expect(ConnectionColorTag.yellow.displayName == "Yellow")
+        #expect(ConnectionColorTag.orange.displayName == "Orange")
+        #expect(ConnectionColorTag.red.displayName == "Red")
+        #expect(ConnectionColorTag.purple.displayName == "Purple")
+        #expect(ConnectionColorTag.gray.displayName == "Gray")
     }
 
+    @Test func workspaceTabDefaultsToUntitledQuery() {
+        let tab = WorkspaceTab()
+
+        #expect(tab.title == "Untitled Query")
+        #expect(tab.kind == .query)
+        #expect(tab.connectionID == nil)
+    }
+
+    @Test func appStateStartsEmpty() {
+        let state = AppState()
+
+        #expect(state.connections.isEmpty)
+        #expect(state.workspaceTabs.isEmpty)
+        #expect(state.selectedConnection == nil)
+        #expect(state.selectedTab == nil)
+    }
 }

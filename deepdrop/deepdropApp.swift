@@ -6,16 +6,22 @@
 //
 
 import SwiftUI
-import CoreData
 
 @main
 struct deepdropApp: App {
-    let persistenceController = PersistenceController.shared
-
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("DeepDrop") {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .deepDropWindowFrame(autosaveName: "DeepDropMainWindow")
+        }
+        .defaultSize(width: 1200, height: 780)
+        .windowResizability(.contentMinSize)
+        .commands {
+            DeepDropCommands()
+        }
+
+        Settings {
+            SettingsView()
         }
     }
 }
