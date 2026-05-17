@@ -397,3 +397,26 @@ Before implementation starts, confirm:
 - Whether settings should be a native Settings scene in Phase 0.
 - Whether Phase 0 should include a real but non-persistent add-connection sheet, or only the shell and empty state.
 
+## Completion Notes
+
+Phase 0 is considered complete when the implementation matches this document and the project builds.
+
+Implemented:
+
+- Replaced the default Core Data sample screen with `DeepDropAppShell`.
+- Added a native SwiftUI shell with sidebar, workspace, results placeholder, add-source placeholder, and settings scene.
+- Added design-system tokens for spacing, typography, colors, and connection color tags.
+- Added placeholder app/domain state types for connection profiles and workspace tabs.
+- Added macOS window sizing, resizing, and frame autosave behavior.
+- Added Swift Testing coverage for basic foundation model defaults.
+- Replaced template UI tests with launch and add-source placeholder checks.
+
+Intentionally deferred:
+
+- Real connection persistence.
+- Keychain-backed secrets.
+- PostgreSQL URL parsing.
+- Database driver integration.
+- Query editor, result grid, schema browser, and AI behavior.
+
+The existing Core Data template stack remains dormant. It is not used by the visible app shell and can be removed or repurposed when the persistence strategy is finalized in Phase 1.

@@ -59,6 +59,7 @@ struct ConnectionEmptyStateView: View {
         .padding(DeepDropSpacing.xxl)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("connection-empty-state")
     }
 }
 

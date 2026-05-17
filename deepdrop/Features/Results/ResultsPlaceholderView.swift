@@ -35,6 +35,7 @@ struct ResultsPlaceholderView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .accessibilityIdentifier("results-placeholder")
     }
 }
 

@@ -26,6 +26,7 @@ struct DeepDropAppShell: View {
                 onAddConnection: showAddConnectionPlaceholder
             )
         }
+        .accessibilityIdentifier("deepdrop-app-shell")
         .sheet(isPresented: $isShowingAddConnectionPlaceholder) {
             AddConnectionPlaceholderSheet()
         }
@@ -62,10 +63,12 @@ private struct AddConnectionPlaceholderSheet: View {
                     dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
+                .accessibilityIdentifier("add-connection-placeholder-close-button")
             }
         }
         .padding(DeepDropSpacing.xl)
         .frame(width: 460)
+        .accessibilityIdentifier("add-connection-placeholder-sheet")
     }
 }
 
