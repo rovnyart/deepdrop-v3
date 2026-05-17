@@ -10,17 +10,20 @@ import Foundation
 struct AppState: Equatable {
     var connections: [ConnectionProfile]
     var selectedConnectionID: ConnectionProfile.ID?
+    var selectedCatalogItem: CatalogSelection?
     var workspaceTabs: [WorkspaceTab]
     var selectedTabID: WorkspaceTab.ID?
 
     init(
         connections: [ConnectionProfile] = [],
         selectedConnectionID: ConnectionProfile.ID? = nil,
+        selectedCatalogItem: CatalogSelection? = nil,
         workspaceTabs: [WorkspaceTab] = [],
         selectedTabID: WorkspaceTab.ID? = nil
     ) {
         self.connections = connections
         self.selectedConnectionID = selectedConnectionID
+        self.selectedCatalogItem = selectedCatalogItem
         self.workspaceTabs = workspaceTabs
         self.selectedTabID = selectedTabID
     }

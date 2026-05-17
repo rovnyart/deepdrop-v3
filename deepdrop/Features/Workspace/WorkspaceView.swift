@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WorkspaceView: View {
     let appState: AppState
+    let selectedCatalog: DatabaseCatalog?
     let onAddConnection: () -> Void
 
     var body: some View {
@@ -19,6 +20,8 @@ struct WorkspaceView: View {
 
             if appState.connections.isEmpty {
                 ConnectionEmptyStateView(onAddConnection: onAddConnection)
+            } else if let selectedCatalog {
+                CatalogObjectDetailView(catalog: selectedCatalog, selection: appState.selectedCatalogItem)
             } else {
                 WorkspacePlaceholderView(tab: appState.selectedTab)
             }
@@ -68,5 +71,5 @@ struct WorkspaceView: View {
 }
 
 #Preview {
-    WorkspaceView(appState: AppState(), onAddConnection: {})
+    WorkspaceView(appState: AppState(), selectedCatalog: nil, onAddConnection: {})
 }

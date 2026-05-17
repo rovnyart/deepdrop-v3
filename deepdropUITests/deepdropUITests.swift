@@ -9,12 +9,14 @@ import XCTest
 
 final class deepdropUITests: XCTestCase {
     private var connectionsFileURL: URL!
+    private var catalogCacheDirectoryURL: URL!
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        connectionsFileURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("deepdrop-ui-tests-\(UUID().uuidString)")
-            .appendingPathComponent("connections.json")
+        let baseDirectoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("deepdrop-ui-tests-\(UUID().uuidString)", isDirectory: true)
+        connectionsFileURL = baseDirectoryURL.appendingPathComponent("connections.json")
+        catalogCacheDirectoryURL = baseDirectoryURL.appendingPathComponent("CatalogCache", isDirectory: true)
     }
 
     override func tearDownWithError() throws {
@@ -77,6 +79,7 @@ final class deepdropUITests: XCTestCase {
     private func makeApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchEnvironment["DEEPDROP_CONNECTIONS_FILE"] = connectionsFileURL.path
+        app.launchEnvironment["DEEPDROP_CATALOG_CACHE_DIR"] = catalogCacheDirectoryURL.path
         app.launchEnvironment["DEEPDROP_KEYCHAIN_SERVICE"] = "com.deepdrop.ui-tests.\(UUID().uuidString)"
         return app
     }

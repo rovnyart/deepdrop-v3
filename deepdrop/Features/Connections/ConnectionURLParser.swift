@@ -44,6 +44,12 @@ enum ConnectionURLParser {
     static func parse(_ rawValue: String) throws -> ParsedConnectionURL {
         let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let components = URLComponents(string: trimmedValue) else {
+            let rawScheme = rawScheme(from: trimmedValue)
+            if rawScheme == "postgres" || rawScheme == "postgresql",
+               let rawPort = rawPort(from: trimmedValue),
+               rawPort.isEmpty == false {
+                throw ConnectionURLParserError.invalidPort(rawPort)
+            }
             throw ConnectionURLParserError.unsupportedScheme(nil)
         }
 
@@ -108,6 +114,14 @@ enum ConnectionURLParser {
         }
 
         return String(hostPort[hostPort.index(after: colonIndex)...])
+    }
+
+    private static func rawScheme(from urlString: String) -> String? {
+        guard let schemeEnd = urlString.range(of: "://")?.lowerBound else {
+            return nil
+        }
+
+        return String(urlString[..<schemeEnd]).lowercased()
     }
 
     private static func normalizedSSLMode(from queryItems: [URLQueryItem]?) -> SSLMode? {
