@@ -11,30 +11,56 @@ struct ConnectionListView: View {
     let connections: [ConnectionProfile]
     @Binding var selection: SidebarSelection?
     let onAddConnection: () -> Void
+    let onEditConnection: (ConnectionProfile) -> Void
+    let onDuplicateConnection: (ConnectionProfile) -> Void
+    let onDeleteConnection: (ConnectionProfile) -> Void
 
     var body: some View {
-        List(selection: $selection) {
-            Section("Connections") {
-                if connections.isEmpty {
-                    emptyConnectionRow
-                } else {
-                    ForEach(connections) { connection in
-                        ConnectionRow(connection: connection)
-                            .tag(SidebarSelection.connection(connection.id))
+        VStack(spacing: 0) {
+            HStack {
+                Text("DeepDrop")
+                    .font(.title3.weight(.semibold))
+                Spacer()
+            }
+            .padding(.horizontal, DeepDropSpacing.lg)
+            .padding(.vertical, DeepDropSpacing.md)
+
+            List(selection: $selection) {
+                Section("Connections") {
+                    if connections.isEmpty {
+                        emptyConnectionRow
+                    } else {
+                        ForEach(connections) { connection in
+                            ConnectionRow(connection: connection)
+                                .tag(SidebarSelection.connection(connection.id))
+                                .contextMenu {
+                                    Button("Edit") {
+                                        onEditConnection(connection)
+                                    }
+
+                                    Button("Duplicate") {
+                                        onDuplicateConnection(connection)
+                                    }
+
+                                    Button("Delete", role: .destructive) {
+                                        onDeleteConnection(connection)
+                                    }
+                                }
+                        }
                     }
                 }
-            }
 
-            Section("Database Objects") {
-                Label("Schemas", systemImage: "square.stack.3d.up")
-                    .foregroundStyle(.secondary)
-                Label("Tables", systemImage: "tablecells")
-                    .foregroundStyle(.secondary)
-                Label("Functions", systemImage: "function")
-                    .foregroundStyle(.secondary)
+                Section("Database Objects") {
+                    Label("Schemas", systemImage: "square.stack.3d.up")
+                        .foregroundStyle(.secondary)
+                    Label("Tables", systemImage: "tablecells")
+                        .foregroundStyle(.secondary)
+                    Label("Functions", systemImage: "function")
+                        .foregroundStyle(.secondary)
+                }
             }
-        }
-        .safeAreaInset(edge: .bottom) {
+            .listStyle(.sidebar)
+
             VStack(spacing: DeepDropSpacing.sm) {
                 Button(action: onAddConnection) {
                     Label("Add Database Source", systemImage: "plus")
@@ -55,7 +81,6 @@ struct ConnectionListView: View {
             .padding(DeepDropSpacing.md)
             .background(.bar)
         }
-        .navigationTitle("DeepDrop")
     }
 
     private var emptyConnectionRow: some View {
@@ -105,6 +130,9 @@ private struct ConnectionRow: View {
     ConnectionListView(
         connections: [],
         selection: $selection,
-        onAddConnection: {}
+        onAddConnection: {},
+        onEditConnection: { _ in },
+        onDuplicateConnection: { _ in },
+        onDeleteConnection: { _ in }
     )
 }

@@ -8,67 +8,132 @@
 import SwiftUI
 
 struct DeepDropAppShell: View {
+    @State private var connectionRepository = ConnectionProfileRepository()
     @State private var appState = AppState()
     @State private var sidebarSelection: SidebarSelection? = .connections
-    @State private var isShowingAddConnectionPlaceholder = false
+    @State private var connectionFormDraft: ConnectionDraft?
+    @State private var connectionPendingDeletion: ConnectionProfile?
 
     var body: some View {
-        NavigationSplitView {
+        HSplitView {
             ConnectionListView(
-                connections: appState.connections,
+                connections: connectionRepository.profiles,
                 selection: $sidebarSelection,
-                onAddConnection: showAddConnectionPlaceholder
+                onAddConnection: showAddConnectionPlaceholder,
+                onEditConnection: editConnection,
+                onDuplicateConnection: duplicateConnection,
+                onDeleteConnection: requestDeleteConnection
             )
-            .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 360)
-        } detail: {
+            .frame(minWidth: 240, idealWidth: 280, maxWidth: 360)
+
             WorkspaceView(
                 appState: appState,
                 onAddConnection: showAddConnectionPlaceholder
             )
+            .frame(minWidth: 680, maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityIdentifier("deepdrop-app-shell")
-        .sheet(isPresented: $isShowingAddConnectionPlaceholder) {
-            AddConnectionPlaceholderSheet()
+        .onAppear {
+            connectionRepository.load()
+            syncConnectionsFromRepository()
+        }
+        .onChange(of: connectionRepository.profiles) { _, _ in
+            syncConnectionsFromRepository()
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { connectionFormDraft != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        connectionFormDraft = nil
+                    }
+                }
+            )
+        ) {
+            ConnectionFormView(
+                draft: connectionFormDraft ?? ConnectionDraft(),
+                onSave: saveConnection,
+                onCancel: {
+                    connectionFormDraft = nil
+                }
+            )
+        }
+        .confirmationDialog(
+            "Delete Connection?",
+            isPresented: Binding(
+                get: { connectionPendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        connectionPendingDeletion = nil
+                    }
+                }
+            ),
+            presenting: connectionPendingDeletion
+        ) { connection in
+            Button("Delete \(connection.displayName)", role: .destructive) {
+                deleteConnection(connection)
+            }
+
+            Button("Cancel", role: .cancel) {
+                connectionPendingDeletion = nil
+            }
+        } message: { connection in
+            Text("This removes the saved profile and its Keychain password.")
         }
     }
 
     private func showAddConnectionPlaceholder() {
-        isShowingAddConnectionPlaceholder = true
+        connectionFormDraft = ConnectionDraft()
     }
-}
 
-private struct AddConnectionPlaceholderSheet: View {
-    @Environment(\.dismiss) private var dismiss
+    private func saveConnection(_ draft: ConnectionDraft) throws {
+        let profile = try connectionRepository.save(draft)
+        appState.selectedConnectionID = profile.id
+        sidebarSelection = .connection(profile.id)
+        connectionFormDraft = nil
+    }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: DeepDropSpacing.xl) {
-            VStack(alignment: .leading, spacing: DeepDropSpacing.sm) {
-                Text("Add Database Source")
-                    .font(.title2.weight(.semibold))
-                Text("Phase 1 will turn this into the PostgreSQL connection form with URL parsing, testing, and Keychain-backed secrets.")
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            VStack(alignment: .leading, spacing: DeepDropSpacing.md) {
-                LabeledContent("URL parsing", value: "Phase 1")
-                LabeledContent("Credential storage", value: "Keychain")
-                LabeledContent("Connection test", value: "PostgreSQL driver spike")
-            }
-            .font(DeepDropTypography.metadata)
-
-            HStack {
-                Spacer()
-                Button("Close") {
-                    dismiss()
-                }
-                .keyboardShortcut(.cancelAction)
-                .accessibilityIdentifier("add-connection-placeholder-close-button")
-            }
+    private func editConnection(_ profile: ConnectionProfile) {
+        do {
+            connectionFormDraft = ConnectionDraft(
+                profile: profile,
+                password: try connectionRepository.password(for: profile) ?? ""
+            )
+        } catch {
+            connectionRepository.lastErrorMessage = error.localizedDescription
         }
-        .padding(DeepDropSpacing.xl)
-        .frame(width: 460)
-        .accessibilityIdentifier("add-connection-placeholder-sheet")
+    }
+
+    private func duplicateConnection(_ profile: ConnectionProfile) {
+        do {
+            let duplicate = try connectionRepository.duplicate(profile)
+            appState.selectedConnectionID = duplicate.id
+            sidebarSelection = .connection(duplicate.id)
+        } catch {
+            connectionRepository.lastErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func requestDeleteConnection(_ profile: ConnectionProfile) {
+        connectionPendingDeletion = profile
+    }
+
+    private func deleteConnection(_ profile: ConnectionProfile) {
+        do {
+            try connectionRepository.delete(profile)
+            if appState.selectedConnectionID == profile.id {
+                appState.selectedConnectionID = nil
+                sidebarSelection = .connections
+            }
+            connectionPendingDeletion = nil
+        } catch {
+            connectionRepository.lastErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func syncConnectionsFromRepository() {
+        appState.connections = connectionRepository.profiles
     }
 }
 

@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6EDEB1212FB9CA71002840A8 /* PostgresNIO in Frameworks */ = {isa = PBXBuildFile; productRef = 6EDEB1202FB9CA71002840A8 /* PostgresNIO */; };
+		6EDEB1232FB9CA7F002840A8 /* _ConnectionPoolModule in Frameworks */ = {isa = PBXBuildFile; productRef = 6EDEB1222FB9CA7F002840A8 /* _ConnectionPoolModule */; };
+		6EDEB1252FB9CA84002840A8 /* _ConnectionPoolTestUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 6EDEB1242FB9CA84002840A8 /* _ConnectionPoolTestUtils */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6EDEB0C12FB9B959002840A8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6EDEB1252FB9CA84002840A8 /* _ConnectionPoolTestUtils in Frameworks */,
+				6EDEB1232FB9CA7F002840A8 /* _ConnectionPoolModule in Frameworks */,
+				6EDEB1212FB9CA71002840A8 /* PostgresNIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +87,7 @@
 				6EDEB0B02FB9B958002840A8 /* deepdrop */,
 				6EDEB0C32FB9B959002840A8 /* deepdropTests */,
 				6EDEB0CD2FB9B959002840A8 /* deepdropUITests */,
+				6EDEB11F2FB9CA71002840A8 /* Frameworks */,
 				6EDEB0AF2FB9B958002840A8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +100,13 @@
 				6EDEB0CA2FB9B959002840A8 /* deepdropUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		6EDEB11F2FB9CA71002840A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +129,9 @@
 			);
 			name = deepdrop;
 			packageProductDependencies = (
+				6EDEB1202FB9CA71002840A8 /* PostgresNIO */,
+				6EDEB1222FB9CA7F002840A8 /* _ConnectionPoolModule */,
+				6EDEB1242FB9CA84002840A8 /* _ConnectionPoolTestUtils */,
 			);
 			productName = deepdrop;
 			productReference = 6EDEB0AE2FB9B958002840A8 /* deepdrop.app */;
@@ -195,6 +215,9 @@
 			);
 			mainGroup = 6EDEB0A52FB9B958002840A8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6EDEB11C2FB9C904002840A8 /* XCRemoteSwiftPackageReference "postgres-nio" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6EDEB0AF2FB9B958002840A8 /* Products */;
 			projectDirPath = "";
@@ -400,7 +423,17 @@
 				DEVELOPMENT_TEAM = PTDKV576F4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -432,7 +465,17 @@
 				DEVELOPMENT_TEAM = PTDKV576F4;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -573,6 +616,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6EDEB11C2FB9C904002840A8 /* XCRemoteSwiftPackageReference "postgres-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vapor/postgres-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.33.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6EDEB1202FB9CA71002840A8 /* PostgresNIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EDEB11C2FB9C904002840A8 /* XCRemoteSwiftPackageReference "postgres-nio" */;
+			productName = PostgresNIO;
+		};
+		6EDEB1222FB9CA7F002840A8 /* _ConnectionPoolModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EDEB11C2FB9C904002840A8 /* XCRemoteSwiftPackageReference "postgres-nio" */;
+			productName = _ConnectionPoolModule;
+		};
+		6EDEB1242FB9CA84002840A8 /* _ConnectionPoolTestUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EDEB11C2FB9C904002840A8 /* XCRemoteSwiftPackageReference "postgres-nio" */;
+			productName = _ConnectionPoolTestUtils;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6EDEB0A62FB9B958002840A8 /* Project object */;
 }
