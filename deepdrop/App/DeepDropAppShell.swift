@@ -10,6 +10,7 @@ import SwiftUI
 struct DeepDropAppShell: View {
     @State private var connectionRepository = ConnectionProfileRepository()
     @State private var catalogRepository = CatalogRepository()
+    private let queryHistoryStore = JSONQueryHistoryStore()
     @State private var appState = AppState()
     @State private var sidebarSelection: SidebarSelection? = .connections
     @State private var connectionFormDraft: ConnectionDraft?
@@ -34,9 +35,12 @@ struct DeepDropAppShell: View {
             .frame(minWidth: 240, idealWidth: 280, maxWidth: 360)
 
             WorkspaceView(
-                appState: appState,
+                appState: $appState,
                 selectedCatalog: selectedCatalog,
-                onAddConnection: showAddConnectionPlaceholder
+                onAddConnection: showAddConnectionPlaceholder,
+                onNewQuery: openQueryTab,
+                onExecuteQuery: executeQuery,
+                onRecordQueryHistory: recordQueryHistory
             )
             .frame(minWidth: 680, maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -45,6 +49,7 @@ struct DeepDropAppShell: View {
         .onAppear {
             connectionRepository.load()
             syncConnectionsFromRepository()
+            loadQueryHistory()
         }
         .onChange(of: connectionRepository.profiles) { _, _ in
             syncConnectionsFromRepository()
@@ -180,6 +185,47 @@ struct DeepDropAppShell: View {
         appState.selectedConnectionID = profile.id
         sidebarSelection = .connection(profile.id)
         loadCatalog(for: profile, forceRefresh: true)
+    }
+
+    private func openQueryTab() {
+        guard let selectedConnectionID = appState.selectedConnectionID else {
+            return
+        }
+
+        appState.openQueryTab(connectionID: selectedConnectionID)
+    }
+
+    private func executeQuery(_ statement: SQLStatement, connection: ConnectionProfile) async throws -> QueryExecutionResponse {
+        guard statement.classification == .readOnly else {
+            throw QueryExecutionError.unsupportedStatement(statement.classification)
+        }
+
+        guard let password = try connectionRepository.password(for: connection), !password.isEmpty else {
+            throw QueryExecutionError.missingPassword
+        }
+
+        return try await PostgresQueryExecutionService().executeReadOnlyPreview(
+            sql: statement.text,
+            profile: connection,
+            password: password
+        )
+    }
+
+    private func recordQueryHistory(_ entry: QueryHistoryEntry) {
+        do {
+            try queryHistoryStore.append(entry)
+            loadQueryHistory()
+        } catch {
+            connectionRepository.lastErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func loadQueryHistory() {
+        do {
+            appState.queryHistoryEntries = try queryHistoryStore.loadEntries()
+        } catch {
+            connectionRepository.lastErrorMessage = error.localizedDescription
+        }
     }
 
     private func loadCatalogForSelectedConnection(forceRefresh: Bool) {
